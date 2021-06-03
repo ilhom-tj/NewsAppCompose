@@ -1,14 +1,12 @@
 package com.example.newsapp
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.background
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.*
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.ui.Alignment
@@ -29,61 +27,33 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val modifier = Modifier.padding(16.dp)
-
         setContent {
             val pagerState = rememberPagerState(
                 pageCount = 4,
                 initialOffscreenLimit = 2,
             )
-            val scrollState = rememberScrollState()
+
             Scaffold(
                 topBar = { NewsToolBar(modifier = modifier) },
             ) {
-                LazyColumn(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                ) {
-                    item {
-                        HorizontalPager(state = pagerState) { page ->
-                            TopNewsSliderItem(modifier)
+                Column {
+                    HorizontalPager(state = pagerState) { page ->
+                        TopNewsSliderItem(modifier)
+                    }
+                    HorizontalPagerIndicator(
+                        pagerState = pagerState,
+                        modifier = Modifier
+                            .padding(top = 5.dp),
+                    )
+                    LazyVerticalGrid(
+                        cells = GridCells.Fixed(2)
+                    ) {
+                        items(4) {
+                            NewsArticles()
                         }
                     }
-                    item {
-                        HorizontalPagerIndicator(
-                            pagerState = pagerState,
-                            modifier = Modifier
-                                .padding(top = 5.dp),
-                        )
-                    }
-                    item {
-                        Box(
-                            Modifier
-                                .fillMaxWidth(0.9f)
-                                .offset(y = 24.dp)
-                                .height(1.dp)
-                                .background(Color.Gray.copy(0.5f)),
-                        )
-                    }
-
-                    val stathamList = listOf<Int>(1, 2, 3, 4)
-                    items(stathamList.windowed(2, 2, true)) { item ->
-                        Row(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .background(Color.Red)
-                        ) {
-                            repeat(item.size) {
-                                NewsArticles(modifier)
-                            }
-                        }
-
-                    }
-
-
                 }
-
-
             }
-
         }
     }
 }

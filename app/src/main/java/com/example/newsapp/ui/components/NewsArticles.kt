@@ -1,6 +1,7 @@
 package com.example.newsapp.ui.components
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
@@ -17,9 +18,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.newsapp.R
 
+val randomColors = listOf(Color.Black, Color.Yellow, Color.Blue, Color.Green, Color.Magenta)
+
 @Composable
-fun NewsArticles(modifier: Modifier) {
-    Column() {
+fun NewsArticles() {
+    Column(
+        modifier = Modifier
+            .padding(16.dp)
+            .background(color = randomColors.random())
+    ) {
         Image(
             painter = painterResource(id = R.mipmap.stathamslider),
             contentDescription = "",
@@ -29,7 +36,6 @@ fun NewsArticles(modifier: Modifier) {
         )
         Spacer(modifier = Modifier.height(10.dp))
         Text(
-
             text = "STARTUPS",
             style = TextStyle(
                 Color.Blue,
@@ -44,10 +50,7 @@ fun NewsArticles(modifier: Modifier) {
                 Color.Black,
                 fontWeight = FontWeight.Black,
                 fontSize = 18.sp
-            ),
-
             )
+        )
     }
-
-
 }
