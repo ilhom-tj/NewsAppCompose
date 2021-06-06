@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.*
@@ -13,46 +14,50 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.example.newsapp.ui.components.NewsArticles
-import com.example.newsapp.ui.components.NewsToolBar
-import com.example.newsapp.ui.components.TopNewsSliderItem
+import androidx.navigation.NavHost
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.example.newsapp.ui.components.*
+import com.example.newsapp.ui.screen.Home
+import com.example.newsapp.viewmodels.NewsViewModel
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.HorizontalPagerIndicator
 import com.google.accompanist.pager.rememberPagerState
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    private val newsViewModel by viewModels<NewsViewModel>()
     @ExperimentalFoundationApi
     @ExperimentalPagerApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val modifier = Modifier.padding(16.dp)
+        newsViewModel.scratchNews()
         setContent {
-            val pagerState = rememberPagerState(
-                pageCount = 4,
-                initialOffscreenLimit = 2,
-            )
 
+            val navController =  rememberNavController()
             Scaffold(
                 topBar = { NewsToolBar(modifier = modifier) },
+                bottomBar = { BottomNavBar(navController = navController)}
             ) {
-                Column {
-                    HorizontalPager(state = pagerState) { page ->
-                        TopNewsSliderItem(modifier)
+                NavHost(navController = navController, startDestination = "home"){
+                    composable(BottomItem.Home.route){
+                        Home(modifier)
                     }
-                    HorizontalPagerIndicator(
-                        pagerState = pagerState,
-                        modifier = Modifier
-                            .padding(top = 5.dp),
-                    )
-                    LazyVerticalGrid(
-                        cells = GridCells.Fixed(2)
-                    ) {
-                        items(4) {
-                            NewsArticles()
-                        }
+                    composable(BottomItem.Search.route){
+
+                    }
+                    composable(BottomItem.Saved.route){
+
+                    }
+                    composable(BottomItem.Setting.route){
+
                     }
                 }
+
             }
         }
     }

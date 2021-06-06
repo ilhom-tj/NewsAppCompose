@@ -6,11 +6,16 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -22,38 +27,25 @@ import com.example.newsapp.R
 
 @Composable
 fun NewsToolBar(modifier: Modifier) {
-    Column( modifier = modifier.fillMaxWidth()) {
-        Text(
-            text = "WEDNESDAY, JUNE 3",
-            style = TextStyle(
-                Color.Gray,
-                fontSize = 15.sp,
-                fontWeight = FontWeight.Bold
-            )
+    Row(
+        modifier = modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Image(
+            imageVector = Icons.Filled.Menu,
+            contentDescription = "",
+            Modifier
+                .width(35.dp)
+                .height(35.dp),
+            colorFilter = ColorFilter.tint(Color(0xfff44336))
         )
-        Row(Modifier.fillMaxWidth(),horizontalArrangement = Arrangement.SpaceBetween , verticalAlignment = Alignment.CenterVertically) {
-            Text(
-                text = "Top News",
-                style = TextStyle(
-                    Color.Black,
-                    fontSize = 40.sp,
-                    fontWeight = FontWeight.Black
-                )
-            )
-            Image(
-                painter = painterResource(id = R.mipmap.statham),
-                modifier = Modifier
-                    .size(40.dp)
-                    .clip(CircleShape)
-                    .border(
-                        width = 0.5.dp, Color.Black,
-                        CircleShape
-                    ),
-                contentDescription = "",
-                contentScale = ContentScale.Crop
-            )
-        }
-
-
+        Image(
+            imageVector = Icons.Filled.Notifications,
+            contentDescription = "",
+            Modifier
+                .width(35.dp)
+                .height(35.dp),
+            colorFilter = ColorFilter.tint(Color(0xfff44336))
+        )
     }
 }

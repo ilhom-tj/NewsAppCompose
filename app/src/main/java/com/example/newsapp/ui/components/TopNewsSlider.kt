@@ -23,10 +23,10 @@ import com.google.accompanist.pager.*
 import com.example.newsapp.R
 import kotlin.math.absoluteValue
 
+@Preview
 @ExperimentalPagerApi
 @Composable
 fun TopNewsSliderItem(modifier: Modifier) {
-
     Column(modifier = modifier.graphicsLayer {
 
     }) {
