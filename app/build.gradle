@@ -103,4 +103,7 @@ dependencies {
     kaptTest 'com.google.dagger:hilt-compiler:2.36'
 
     implementation("androidx.navigation:navigation-compose:2.4.0-alpha02")
+
+    //Image
+    implementation "com.google.accompanist:accompanist-coil:0.11.1"
 }

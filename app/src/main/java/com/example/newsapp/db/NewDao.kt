@@ -7,7 +7,7 @@ import com.example.newsapp.models.Article
 @Dao
 interface NewDao {
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addArticle(article: Article)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)

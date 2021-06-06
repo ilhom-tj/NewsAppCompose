@@ -12,6 +12,9 @@ class NewsViewModel @Inject constructor(
 ) : ViewModel() {
     fun scratchNews() {
         Log.e("dsa","dsa")
-        repository.getNewsByCategory("sports")
+        repository.getTopNews()
     }
+
+    val newsTop = repository.newsTop
+    fun getNews(category : String) = repository.getNews(category)
 }

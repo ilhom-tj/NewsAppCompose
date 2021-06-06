@@ -1,10 +1,12 @@
 package com.example.newsapp.ui.components
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.runtime.Composable
@@ -25,11 +27,30 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.ConstraintSet
 import androidx.constraintlayout.compose.Dimension
+import androidx.navigation.NavController
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import com.example.newsapp.R
+import com.example.newsapp.models.Article
 import com.example.newsapp.ui.theme.LightColorPalette
+import com.google.accompanist.coil.rememberCoilPainter
+import com.google.accompanist.glide.rememberGlidePainter
 
+@ExperimentalMaterialApi
 @Composable
-fun ArticlesBig() {
+fun ArticlesBig(
+    article: Article,
+    navController: NavController
+) {
+    fun navigate(category : String){
+        navController.navigate("newsList"){
+            popUpTo(navController.graph.findStartDestination().id) {
+                saveState = true
+            }
+            launchSingleTop = true
+            restoreState = true
+        }
+    }
+
     val colors = listOf(
         Color.Transparent,
         Color.Black
@@ -39,15 +60,19 @@ fun ArticlesBig() {
         modifier = Modifier
             .padding(10.dp)
             .requiredWidth(300.dp)
-            .requiredHeight(280.dp)
-
+            .requiredHeight(280.dp),
+        onClick = {
+            article.category?.let { navigate(category = it) }
+        }
     ) {
-        Image(
-            painter = painterResource(id = R.mipmap.abba),
-            modifier = Modifier.fillMaxSize(),
-            contentDescription = "",
-            contentScale = ContentScale.Crop,
-        )
+        if (article.urlToImage != null){
+            Image(
+                painter = rememberGlidePainter(request = article.urlToImage),
+                modifier = Modifier.fillMaxSize(),
+                contentDescription = "",
+                contentScale = ContentScale.Crop,
+            )
+        }
         Box(
             Modifier
                 .fillMaxSize()
@@ -82,13 +107,15 @@ fun ArticlesBig() {
                     .padding(5.dp)
                     .layoutId("category"),
             ) {
-                Text(
-                    text = "Category",
-                    style = TextStyle(
-                        color = Color.White,
-                        fontWeight = FontWeight.Bold
+                article.category?.let {
+                    Text(
+                        text = it,
+                        style = TextStyle(
+                            color = Color.White,
+                            fontWeight = FontWeight.Bold
+                        )
                     )
-                )
+                }
             }
             Column(
                 modifier = Modifier
@@ -96,7 +123,7 @@ fun ArticlesBig() {
                     .padding(start = 10.dp)
             ) {
                 Text(
-                    text = "BalX team is go on. The founder and team is working so hard!",
+                    text = article.title,
                     style = TextStyle(
                         Color.White,
                         fontSize = 25.sp,
@@ -123,27 +150,27 @@ fun ArticlesBig() {
     }
 }
 
-@Preview
 @Composable
-fun ArticlesList() {
+fun ArticlesList(article: Article) {
     Row(
         Modifier
             .background(Color.White)
             .fillMaxWidth()
-            .padding(10.dp)) {
+            .padding(10.dp)
+    ) {
         val constraintSet = ConstraintSet {
             val title = createRefFor("title")
             val author = createRefFor("author")
             val image = createRefFor("img")
-            constrain(title){
+            constrain(title) {
                 top.linkTo(parent.top)
                 bottom.linkTo(parent.bottom)
             }
-            constrain(author){
+            constrain(author) {
                 top.linkTo(title.bottom)
                 start.linkTo(title.start)
             }
-            constrain(image){
+            constrain(image) {
                 end.linkTo(parent.end)
                 bottom.linkTo(parent.bottom)
                 top.linkTo(parent.top)
@@ -153,40 +180,97 @@ fun ArticlesList() {
             }
 
         }
-        ConstraintLayout(constraintSet,modifier = Modifier.fillMaxWidth()) {
+        ConstraintLayout(constraintSet, modifier = Modifier.fillMaxWidth()) {
             Text(
-                text = "BalX team is go on. The founder and team is working so hard!",
+                text = article.title,
                 style = TextStyle(
                     Color.Black,
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Medium
                 ),
                 modifier = Modifier
                     .fillMaxWidth(0.5f)
                     .padding(end = 10.dp)
                     .layoutId("title")
             )
-            Text(
-                text = "BalX News LLC",
-                style = TextStyle(
-                    Color.Black
-                ),
+            article.author?.let {
+                Text(
+                    text = it,
+                    style = TextStyle(
+                        Color.Black
+                    ),
+                    modifier = Modifier
+                        .width(250.dp)
+                        .padding(end = 5.dp)
+                        .layoutId("author")
+                )
+            }
+            if (article.urlToImage != null){
+                Image(
+                    painter = rememberCoilPainter(request = article.urlToImage!!),
+                    contentDescription = "",
+                    Modifier
+                        .clip(RoundedCornerShape(10.dp))
+                        .layoutId("img"),
+                    contentScale = ContentScale.Crop
+                )
+            }
 
+        }
+    }
+}
+
+@Composable
+fun ArticlesGrid(article: Article) {
+    Row(
+        Modifier
+            .background(Color.White)
+            .fillMaxWidth()
+    ) {
+        val constraintSet = ConstraintSet {
+            val title = createRefFor("title")
+            val image = createRefFor("img")
+            constrain(title) {
+                top.linkTo(image.bottom)
+                start.linkTo(image.start)
+                end.linkTo(image.end)
+                width = Dimension.fillToConstraints
+            }
+            constrain(image) {
+                top.linkTo(parent.top)
+                start.linkTo(parent.start)
+                end.linkTo(parent.end)
+                width = Dimension.fillToConstraints
+                height = Dimension.value(180.dp)
+            }
+
+        }
+        ConstraintLayout(constraintSet, modifier = Modifier.fillMaxWidth()) {
+            Text(
+                text = article.title,
+                style = TextStyle(
+                    Color.Black,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Medium
+                ),
                 modifier = Modifier
-                    .padding(end = 5.dp)
-                    .layoutId("author")
+                    .padding(start = 10.dp)
+                    .layoutId("title")
             )
-            Image(
-                painter = painterResource(id = R.mipmap.abba),
+//            Log.e("img",article.urlToImage!!)
+            if (article.urlToImage != null){
+                Image(
+                    painter = rememberCoilPainter(request = article.urlToImage),
                 contentDescription = "",
                 Modifier
-                    .clip(RoundedCornerShape(16.dp))
+                    .padding(10.dp)
+                    .clip(RoundedCornerShape(10.dp))
                     .layoutId("img"),
                 contentScale = ContentScale.Crop
-            )
+                )
+            }
+
         }
-
-
     }
 }
 

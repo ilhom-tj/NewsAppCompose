@@ -19,19 +19,36 @@ class Repository @Inject constructor(
     private val db : NewsDB
 ) {
     val api = RetrofitInstance().api()
-    fun getNewsByCategory(category: String) = GlobalScope.launch {
-        Log.e("AJAJAJAJ", "JAJAJJA")
-        val source = Source(1, "dsa")
-        val article = Article(
-            "dsadsa", "dsadsa",
-            "dsadsa", "dsadsa",
-            source, "dsadsa", "dsadsa", "dsadsa", "dsadsa"
-        )
-        newsDao.addArticle(article)
-    }
 
-    fun log() {
-        Log.e("dadsa", "ilhom")
+    val categories = listOf(
+        "business",
+        "entertainment",
+        "health",
+        "science",
+        "sports",
+        "technology"
+    )
+    val newsTop = newsDao.getNews("top")
+    fun getNews(category: String) = newsDao.getNews(category = category)
+    fun getTopNews() = GlobalScope.launch {
+
+        api.getTopNews().enqueue(object : Callback<NewsResponse>{
+            override fun onResponse(call: Call<NewsResponse>, response: Response<NewsResponse>) {
+                if (response.isSuccessful){
+                    cacheNews(response.body()!!.articles,"top")
+                }
+            }
+
+            override fun onFailure(call: Call<NewsResponse>, t: Throwable) {
+
+                Log.e("ERROR", t.message.toString())
+            }
+
+        })
+        categories.forEach {
+            fillCategories(it)
+        }
+       // newsDao.addArticle(article)
     }
 
     fun cacheNews(list: List<Article>, category: String) = GlobalScope.launch {
@@ -39,5 +56,22 @@ class Repository @Inject constructor(
             it.category = category
             newsDao.addArticle(it)
         }
+    }
+
+    fun fillCategories(category: String){
+        api.getTopNews(category = category).enqueue(object : Callback<NewsResponse>{
+            override fun onResponse(call: Call<NewsResponse>, response: Response<NewsResponse>) {
+                if (response.isSuccessful){
+                    response.body()?.articles?.let {
+                        Log.e("ARTICLE",it.get(0).title)
+                        cacheNews(it,category) }
+                }
+            }
+
+            override fun onFailure(call: Call<NewsResponse>, t: Throwable) {
+
+            }
+
+        })
     }
 }
